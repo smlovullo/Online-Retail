@@ -1,9 +1,6 @@
 # Python virtual environment
 .venv/
 
-# Data
-data/
-
 # VS Code settings
 .vscode/
 
