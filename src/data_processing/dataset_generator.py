@@ -1,7 +1,7 @@
 import os
+import pickle
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 from sklearn.preprocessing import Normalizer
 from sklearn.decomposition import PCA
 from sklearn.cluster import Birch
@@ -85,6 +85,10 @@ print('Adding cluster labels to customer data sets...')
 customers_clustered = principle_2d_df[['Cluster']].join(quantities_of_purchases_by_customer)
 customers_clustered_norm = principle_2d_df[['Cluster']].join(quantities_of_purchases_by_customer_norm)
 
+print('Saving clustering model...')
+model_file_name = 'cluster_model.pkl'
+with open(f"{os.getenv('PROJ_REPOS')}\\models\\{model_file_name}", 'wb') as file:
+    pickle.dump(clustering_model, file)
 print('Saving new versions of customer data sets with cluster labels...')
 save_csv(customers_clustered, 'Customer_Purchases_Clusters.csv')
 save_csv(customers_clustered_norm, 'Customer_Purchases_Clusters_Norm.csv')
