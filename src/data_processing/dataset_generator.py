@@ -33,7 +33,7 @@ def create_customer_purchase_df_outline() -> pd.DataFrame:
     return to_return
 
 print('Reading in original data...')
-online_retail_data = load_csv('Online_Retail.csv')
+online_retail_data = pd.read_excel("Online Retail.xlsx")
 customer_data = online_retail_data.dropna(subset=['CustomerID'])
 customer_data = customer_data.astype({'CustomerID': int})
 customer_data = customer_data.astype({'CustomerID': str})
