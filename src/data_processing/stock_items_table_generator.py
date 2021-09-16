@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Read original xlsx file
-file_path = f"{os.getenv('PROJ_REPOS')}\\data\\Online Retail.xlsx"
+file_path = f"{os.getenv('PROJ_REPOS')}/data/Online Retail.xlsx"
 online_retail = pd.read_excel(file_path)
 online_retail['StockCode'] = online_retail['StockCode'].astype(str)
 online_retail['Description'] = online_retail['Description'].astype(str)
@@ -57,5 +57,5 @@ stock_items_all = stock_items
 stock_items = stock_items.drop_duplicates('StockCode')
 
 # Write data frames to csv files
-stock_items_all.to_csv(f"{os.getenv('PROJ_REPOS')}\\data\\Stock_Items_All.csv")
-stock_items.to_csv(f"{os.getenv('PROJ_REPOS')}\\data\\Stock_Items.csv")
+stock_items_all.to_csv(f"{os.getenv('PROJ_REPOS')}/data/Stock_Items_All.csv")
+stock_items.to_csv(f"{os.getenv('PROJ_REPOS')}/data/Stock_Items.csv")

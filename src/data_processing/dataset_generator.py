@@ -2,6 +2,7 @@ import os
 import pickle
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import Normalizer
 from sklearn.decomposition import PCA
 from sklearn.cluster import Birch
@@ -9,10 +10,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def save_csv(data_frame: pd.DataFrame, file_name: str) -> None:
-    data_frame.to_csv(f"{os.getenv('PROJ_REPOS')}\\data\\{file_name}")
+    data_frame.to_csv(f"{os.getenv('PROJ_REPOS')}/data/{file_name}")
 
 def load_csv(file_name: str, index_col: str = None) -> pd.DataFrame:
-    to_return = pd.read_csv(f"{os.getenv('PROJ_REPOS')}\\data\\{file_name}", encoding='latin1', index_col=index_col)
+    to_return = pd.read_csv(f"{os.getenv('PROJ_REPOS')}/data/{file_name}", encoding='latin1', index_col=index_col)
     return to_return
 
 def to_unique_sorted_list(array: np.ndarray) -> list:
@@ -34,9 +35,20 @@ def create_customer_purchase_df_outline() -> pd.DataFrame:
 
 print('Reading in original data...')
 online_retail_data = pd.read_excel("Online Retail.xlsx")
-customer_data = online_retail_data.dropna(subset=['CustomerID'])
+
+# FIXME: Train-Test-Split should be done on customer-oriented data, not product-transaction-level data
+print('Separating training and testing data...')
+online_retail_train, online_retail_test = train_test_split(online_retail_data, train_size=0.8)
+
+print('Creating csv files for training and testing data...')
+save_csv(online_retail_train, 'Online_Retail_Train.csv')
+save_csv(online_retail_test, 'Online_Retail_Test.csv')
+
+print('Reloading training data...')
+customer_data = online_retail_train.dropna(subset=['CustomerID'])
 customer_data = customer_data.astype({'CustomerID': int})
 customer_data = customer_data.astype({'CustomerID': str})
+customer_data = customer_data.astype({'StockCode': str})
 
 print('Gathering stock codes, customer IDs, and countries...')
 stock_codes = to_unique_sorted_list(customer_data.StockCode.astype(str).values)
@@ -84,10 +96,13 @@ principle_2d_df['Cluster'] = predictions
 print('Adding cluster labels to customer data sets...')
 customers_clustered = principle_2d_df[['Cluster']].join(quantities_of_purchases_by_customer)
 customers_clustered_norm = principle_2d_df[['Cluster']].join(quantities_of_purchases_by_customer_norm)
-
+print('Saving PCA model...')
+model_file_name = 'pca_model.pkl'
+with open(f"{os.getenv('PROJ_REPOS')}/models/{model_file_name}", 'wb') as file:
+    pickle.dump(pca_2d, file)
 print('Saving clustering model...')
 model_file_name = 'cluster_model.pkl'
-with open(f"{os.getenv('PROJ_REPOS')}\\models\\{model_file_name}", 'wb') as file:
+with open(f"{os.getenv('PROJ_REPOS')}/models/{model_file_name}", 'wb') as file:
     pickle.dump(clustering_model, file)
 print('Saving new versions of customer data sets with cluster labels...')
 save_csv(customers_clustered, 'Customer_Purchases_Clusters.csv')
